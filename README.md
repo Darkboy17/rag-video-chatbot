@@ -5,7 +5,7 @@ YouTube, TikTok, or Instagram URLs, extracts metadata and transcripts, stores
 timestamped transcript chunks in Chroma, and lets the user ask streamed follow-up
 questions with source citations.
 
-The project is written as an assessment-ready demo, but the code is organized
+The project is a demo, but the code is organized
 like a small production service: platform extraction is isolated, transcript and
 retrieval work live behind service boundaries, and the frontend is split into
 focused components and hooks.
@@ -243,6 +243,13 @@ YTDLP_SOCKET_TIMEOUT=60
 ```
 
 Frontend environment:
+
+Create the frontend environment file from `frontend/.env.example`:
+
+```powershell
+cd frontend
+copy .env.example .env
+```
 
 ```text
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
