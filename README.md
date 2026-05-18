@@ -327,11 +327,22 @@ mixing proxy routes, which avoids many truncated-media failures.
 
 ### Instagram
 
-Instagram is the least deterministic source. The extractor uses direct `yt-dlp`
+Instagram is the least deterministic source. The extractor uses direct yt-dlp
 metadata first, then falls back through profile/media/clips data and page
 parsing where available. Browser cookies can improve reliability, but public
 Reels may still hide views, followers, or engagement fields depending on login
 state, region, rate limits, and Instagram response changes.
+
+For some creator pages, Instagram does not expose follower_count through the
+JSON/API responses even when the count is visible on the rendered profile page.
+In testing, those cases could be handled with an optional Playwright fallback:
+open the creator profile in a real browser context, reuse a logged-in browser
+profile when available, wait for the page to render, then parse the visible
+profile text/meta description for values such as 288K followers. This is not
+enabled as a default dependency because it requires browser installation and is
+more environment-sensitive, but it would be a practical production enhancement
+for improving follower-count coverage on profiles where API/page-source parsing
+returns unavailable.
 
 ## RAG Design Choices
 
