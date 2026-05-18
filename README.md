@@ -381,9 +381,6 @@ actual analysis tool:
 - `useVideoAnalysis` manages streaming ingestion state.
 - `useStreamingChat` manages streamed assistant responses and source events.
 
-The UI intentionally avoids repeating followers and duration below the video
-cards because those values already appear in the stats grid.
-
 ## Testing And Verification
 
 Backend:
@@ -402,15 +399,7 @@ npm run lint
 npm run build
 ```
 
-Notes from the latest verification work:
-
-- Backend compile and unit tests passed after the service refactor.
-- Frontend lint passed after the component/comment/branding updates.
-- In this sandbox, `npm run build` can compile successfully and then fail with
-  `spawn EPERM` when Next.js starts worker processes. Run the same command in a
-  normal terminal to complete production-build verification.
-
-## Assessment Talking Points
+## Important Points
 
 ### What Is Dynamic
 
@@ -433,7 +422,7 @@ Notes from the latest verification work:
 - default model names and local configuration values
 - local storage locations
 
-The suggested questions are only UI affordances. The answers come from the
+The suggested questions are taken directly from the assessment just to speed up workflow instead of manual typing. The answers come from the
 current analysis session and retrieved evidence.
 
 ### Why This Handles 1000 Creators Per Day
@@ -464,21 +453,21 @@ The app keeps the default cost profile low by:
 
 - using native YouTube transcripts before transcription
 - using local embeddings
-- storing vectors locally in Chroma
+- storing vectors locally in ChromaDB
 - using a fast Groq chat model by default in `.env.example`
 - transcribing only when transcripts are unavailable
 
-The most expensive path is long audio transcription. A production version should
+The most expensive path is long audio transcription, if we scrape video URLs with long durations( 2 hours or more ). A production version should
 transcode long audio to 16 kHz mono, split it into size-capped chunks, transcribe
-within provider limits, and merge timestamped segments.
+within provider limits, and merge timestamped segments. But, since we are only dealing with Shorts (short and long) <= 5 minutes, we are good here.
 
 ## Known Limitations
 
-- Chat/session memory is process-local and disappears on restart.
+- Chat/session memory is process-local (in-memory) and disappears on restart.
 - Local Chroma is not shared across backend instances.
-- Ingestion is synchronous in the demo.
+- Ingestion is synchronous currently.
 - Instagram and TikTok can fail because of cookies, bot checks, regional
-  restrictions, hidden fields, or rate limits.
+  restrictions, hidden fields, or rate limits. All of this can be resolved with an OS-level VPN with split-tunneling for Groq endpoints.
 - Long videos can exceed transcription upload limits because audio splitting is
   not implemented yet.
 - There is no authentication, quota system, CI pipeline, or deployment package.
@@ -491,27 +480,13 @@ If this were moving beyond assessment/demo stage, the next work would be:
 - Store sessions, videos, and job state in Postgres.
 - Store short-lived progress/chat state in Redis.
 - Replace local Chroma with Qdrant, pgvector, or a managed vector DB.
-- Add audio splitting and parallel transcription for long videos.
+- Add audio splitting and parallel transcription for long videos (optional feature).
 - Add cache keys based on `platform + platform_id`.
 - Add structured logs, traces, and request ids.
 - Add integration tests for real YouTube, TikTok, and Instagram URLs.
 - Add Docker/Compose and CI.
 - Add API auth and per-user quotas.
 
-## Demo Script
-
-1. Start the backend.
-2. Start the frontend.
-3. Open `http://localhost:3000`.
-4. Paste two YouTube Shorts for the most reliable demo path.
-5. Click Analyze and show live progress events.
-6. Show video cards, metrics, engagement rate, and transcript chunk count.
-7. Ask:
-   - `What is the engagement rate of each video?`
-   - `Which video performed better and why?`
-   - `Compare the hooks in the first 5 seconds.`
-   - `Suggest improvements for the weaker video.`
-8. Point out that each answer streams and then returns source chunks.
 
 ## Current Status
 
@@ -533,7 +508,7 @@ Needs production hardening:
 
 - background jobs
 - durable session storage
-- long-audio splitting
+- long-audio splitting (optional)
 - shared vector DB
 - auth/quotas
 - deployment packaging
