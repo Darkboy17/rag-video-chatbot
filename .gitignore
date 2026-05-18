@@ -55,6 +55,10 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Local agent/tool notes
+frontend/AGENTS.md
+frontend/CLAUDE.md
+
 # Media/temp files
 *.mp3
 *.mp4
